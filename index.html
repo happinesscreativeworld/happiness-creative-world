@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rhythm & Canvas Studio — Management Portal</title>
+<title>Happiness Creative World</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -169,8 +169,8 @@ textarea{resize:vertical;min-height:80px}
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="logo-area">
-    <div class="logo-title">Rhythm & Canvas</div>
-    <div class="logo-sub">Studio Management</div>
+    <div class="logo-title">Happiness Creative World</div>
+    <div class="logo-sub">Dance & Art Studio</div>
   </div>
   <nav>
     <div class="nav-section">Main</div>
@@ -267,14 +267,14 @@ textarea{resize:vertical;min-height:80px}
         </div>
         <select style="width:auto;padding:.5rem .75rem" onchange="filterStudents()" id="filterClass">
           <option value="">All classes</option>
-          <option value="Bharatanatyam">Bharatanatyam</option>
           <option value="Kathak">Kathak</option>
           <option value="Hip Hop">Hip Hop</option>
-          <option value="Contemporary">Contemporary</option>
-          <option value="Salsa">Salsa</option>
+          <option value="Salsa">Freestyle</option>
+          <option value="Salsa">Bollywood</option>
           <option value="Painting">Painting</option>
           <option value="Sketching">Sketching</option>
-          <option value="Pottery">Pottery</option>
+          <option value="Pottery">Clay Art</option>
+          <option value="Pottery">Macrame dhaga Wall-handing Doll</option>
         </select>
       </div>
       <div class="card" style="padding:0">
@@ -876,9 +876,9 @@ function saveStudent(){
 
 // ── Welcome Message ───────────────────────────────────────────────────────────
 function sendWelcome(s){
-  const waMsg=`🌟 Welcome to Happiness Creator! 🌟\n\nDear ${s.name},\n\nWe're absolutely thrilled to welcome you to the *Happiness Creator* family! 🎉\n\nHere are your enrolment details:\n📚 Course: ${s.course}\n⏰ Batch Timing: ${s.timing}\n📅 Start Date: ${s.joined}\n💰 Monthly Fee: ₹${fmt(s.monthlyFee)}\n\nGet ready to discover the joy of movement and creativity. We can't wait to see you shine! ✨\n\nSee you in class!\n— Happiness Creator Studio 🎭`;
+  const waMsg=`🌟 Welcome to Happiness Creator World 🌟\n\nDear ${s.name},\n\nWe're absolutely thrilled to welcome you to the *Happiness Creator World* family! 🎉\n\nHere are your enrolment details:\n📚 Course: ${s.course}\n⏰ Batch Timing: ${s.timing}\n📅 Start Date: ${s.joined}\n💰 Monthly Fee: ₹${fmt(s.monthlyFee)}\n\nGet ready to discover the joy of movement and creativity. We can't wait to see you shine! ✨\n\nSee you in class!\n— Happiness Creator World 🎭`;
 
-  const emailMsg=`Subject: Welcome to Happiness Creator! 🌟\n\nDear ${s.name},\n\nWe are delighted to welcome you to Happiness Creator!\n\nYour Enrolment Details:\n• Course: ${s.course}\n• Batch Timing: ${s.timing}\n• Start Date: ${s.joined}\n• Monthly Fee: ₹${fmt(s.monthlyFee)}\n\nWe believe every step, every stroke, and every creation brings happiness. You've just joined a community that celebrates art, dance, and the joy of expression.\n\nIf you have any questions, please feel free to reach out to us.\n\nWith love & joy,\nHappiness Creator Studio`;
+  const emailMsg=`Subject: Welcome to Happiness World 🌟\n\nDear ${s.name},\n\nWe are delighted to welcome you to Happiness Creator!\n\nYour Enrolment Details:\n• Course: ${s.course}\n• Batch Timing: ${s.timing}\n• Start Date: ${s.joined}\n• Monthly Fee: ₹${fmt(s.monthlyFee)}\n\nWe believe every step, every stroke, and every creation brings happiness. You've just joined a community that celebrates art, dance, and the joy of expression.\n\nIf you have any questions, please feel free to reach out to us.\n\nWith love & joy,\nHappiness Creator Studio`;
 
   // Log to notification history
   const waPhone=(s.whatsapp||s.phone).replace(/[^0-9]/g,'');
@@ -898,7 +898,7 @@ function sendWelcome(s){
     window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(waMsg)}`,'_blank');
   };
   document.getElementById('welcomeSendEmail').onclick=()=>{
-    window.open(`mailto:${s.email}?subject=${encodeURIComponent('Welcome to Happiness Creator! 🌟')}&body=${encodeURIComponent(emailMsg)}`,'_blank');
+    window.open(`mailto:${s.email}?subject=${encodeURIComponent('Welcome to Happiness World 🌟')}&body=${encodeURIComponent(emailMsg)}`,'_blank');
   };
   document.getElementById('welcomeSendSMS').onclick=()=>{
     window.open(`sms:${s.phone}?body=${encodeURIComponent(waMsg)}`,'_blank');
