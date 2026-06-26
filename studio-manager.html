@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rhythm & Canvas Studio — Management Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;--gold-light:#F0D89A;--gold-dark:#8B6914;
+  --bg:#0E0E12;--bg2:#16161C;--bg3:#1E1E28;--bg4:#26263A;
+  --text:#F2EFE8;--text2:#B8B4A8;--text3:#7A7870;
+  --purple:#8B5CF6;--purple-light:#A78BFA;--purple-bg:rgba(139,92,246,0.12);
+  --teal:#2DD4BF;--teal-bg:rgba(45,212,191,0.1);
+  --green:#22C55E;--green-bg:rgba(34,197,94,0.1);
+  --red:#EF4444;--red-bg:rgba(239,68,68,0.1);
+  --amber:#F59E0B;--amber-bg:rgba(245,158,11,0.1);
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1,h2,h3{font-family:'Cormorant Garamond',serif}
+
+/* Layout */
+.app{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform .3s}
+.main{margin-left:240px;flex:1;min-height:100vh}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.content{padding:1.5rem}
+
+/* Sidebar */
+.logo-area{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid var(--border)}
+.logo-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold);line-height:1.2}
+.logo-sub{font-size:11px;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-top:2px}
+nav{padding:1rem 0;flex:1}
+.nav-section{padding:.5rem 1.25rem .25rem;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:.55rem 1.25rem;color:var(--text2);cursor:pointer;border-left:2px solid transparent;transition:all .2s;font-size:.9rem}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03);border-left-color:var(--border2)}
+.nav-item.active{color:var(--gold);background:rgba(201,168,76,0.08);border-left-color:var(--gold)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--text3)}
+.hamburger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:4px}
+
+/* Topbar */
+.page-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:.75rem}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:.45rem .9rem;border-radius:var(--radius-sm);font-size:.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;border:1px solid transparent;font-weight:500}
+.btn-primary{background:var(--gold);color:#0E0E12;border-color:var(--gold)}
+.btn-primary:hover{background:#E0B85C}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border2)}
+.btn-ghost:hover{color:var(--text);background:var(--bg3)}
+.btn-danger{background:var(--red-bg);color:var(--red);border-color:rgba(239,68,68,.3)}
+.btn-sm{padding:.3rem .65rem;font-size:.8rem}
+.btn svg{width:14px;height:14px}
+
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;margin-bottom:1rem;color:var(--text)}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem}
+.stat-label{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
+.stat-value{font-size:1.75rem;font-family:'Cormorant Garamond',serif;color:var(--text);line-height:1}
+.stat-sub{font-size:.75rem;color:var(--text3);margin-top:.25rem}
+
+/* Grid */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:.75rem;font-weight:500}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+.badge-purple{background:var(--purple-bg);color:var(--purple-light)}
+.badge-teal{background:var(--teal-bg);color:var(--teal)}
+
+/* Table */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th{text-align:left;padding:.6rem .75rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);border-bottom:1px solid var(--border);font-weight:500}
+td{padding:.75rem;border-bottom:1px solid var(--border);color:var(--text2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02);color:var(--text)}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;flex-shrink:0}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h2{font-family:'Cormorant Garamond',serif;font-size:1.35rem}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.75rem}
+
+/* Form */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-group{margin-bottom:1rem}
+.form-group.full{grid-column:1/-1}
+label{display:block;font-size:.8rem;color:var(--text3);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:.6rem .75rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+select option{background:var(--bg3)}
+textarea{resize:vertical;min-height:80px}
+
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.tab{padding:.6rem 1rem;font-size:.875rem;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* Search */
+.search-bar{position:relative}
+.search-bar input{padding-left:2.25rem;background:var(--bg3)}
+.search-bar svg{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--text3);width:16px;height:16px}
+
+/* Page sections */
+.section{display:none}
+.section.active{display:block}
+
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:.875rem;display:flex;align-items:center;gap:.5rem;z-index:300;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-success{border-left:3px solid var(--green)}
+.toast-info{border-left:3px solid var(--gold)}
+
+/* Payment row */
+.pay-row{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.pay-row:last-child{border-bottom:none}
+
+/* Progress bar */
+.progress{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:var(--gold);transition:width .5s}
+
+/* Empty state */
+.empty{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.empty svg{width:48px;height:48px;margin:0 auto .75rem;opacity:.3;display:block}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+/* Responsive */
+@media(max-width:900px){
+  .grid-4{grid-template-columns:1fr 1fr}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger{display:block}
+  .grid-2{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .grid-4{grid-template-columns:1fr}
+  .grid-3{grid-template-columns:1fr}
+  .tabs{overflow-x:auto}
+  .topbar{padding:.75rem 1rem}
+  .content{padding:1rem}
+}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90}
+.overlay.open{display:block}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo-area">
+    <div class="logo-title">Rhythm & Canvas</div>
+    <div class="logo-sub">Studio Management</div>
+  </div>
+  <nav>
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" onclick="showSection('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showSection('students',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Students
+    </div>
+    <div class="nav-item" onclick="showSection('fees',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Fees & Payments
+    </div>
+    <div class="nav-item" onclick="showSection('classes',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Classes & Schedule
+    </div>
+    <div class="nav-section">Reports</div>
+    <div class="nav-item" onclick="showSection('pending',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Pending Dues
+    </div>
+    <div class="nav-item" onclick="showSection('notify',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.26 14a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.17 3h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Send Notifications
+    </div>
+  </nav>
+  <div class="sidebar-footer">v1.0 · © 2025</div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <button class="hamburger" onclick="openSidebar()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-primary" onclick="openAddStudentModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Student
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Dashboard -->
+    <div class="section active" id="section-dashboard">
+      <div class="grid-4">
+        <div class="stat-card">
+          <div class="stat-label">Total Students</div>
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-sub">Enrolled</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Classes</div>
+          <div class="stat-value" id="stat-classes">0</div>
+          <div class="stat-sub">This month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Fees Collected</div>
+          <div class="stat-value" id="stat-collected">₹0</div>
+          <div class="stat-sub">This month</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(239,68,68,.25)">
+          <div class="stat-label">Pending Dues</div>
+          <div class="stat-value" style="color:var(--red)" id="stat-pending">₹0</div>
+          <div class="stat-sub">Outstanding</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Recent Admissions</div>
+          <div id="recentAdmissions"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>No students yet</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Payment Overview</div>
+          <div id="paymentOverview"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>No payments yet</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Students -->
+    <div class="section" id="section-students">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:.75rem;flex-wrap:wrap">
+        <div class="search-bar" style="max-width:280px;flex:1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search students..." id="studentSearch" oninput="filterStudents()">
+        </div>
+        <select style="width:auto;padding:.5rem .75rem" onchange="filterStudents()" id="filterClass">
+          <option value="">All classes</option>
+          <option value="Bharatanatyam">Bharatanatyam</option>
+          <option value="Kathak">Kathak</option>
+          <option value="Hip Hop">Hip Hop</option>
+          <option value="Contemporary">Contemporary</option>
+          <option value="Salsa">Salsa</option>
+          <option value="Painting">Painting</option>
+          <option value="Sketching">Sketching</option>
+          <option value="Pottery">Pottery</option>
+        </select>
+      </div>
+      <div class="card" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Contact</th>
+                <th>Class / Form</th>
+                <th>Timing</th>
+                <th>Joined</th>
+                <th>Fee Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studentTable"><tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--text3)">No students enrolled yet. Click "Add Student" to begin.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fees -->
+    <div class="section" id="section-fees">
+      <div class="tabs">
+        <div class="tab active" onclick="switchFeeTab('all',this)">All Payments</div>
+        <div class="tab" onclick="switchFeeTab('pending',this)">Pending</div>
+        <div class="tab" onclick="switchFeeTab('paid',this)">Paid</div>
+      </div>
+      <div class="card" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="feesTable"><tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--text3)">No fee records yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Classes -->
+    <div class="section" id="section-classes">
+      <div class="grid-3" id="classCards">
+        <!-- class cards generated -->
+      </div>
+    </div>
+
+    <!-- Pending Dues -->
+    <div class="section" id="section-pending">
+      <div style="margin-bottom:1rem">
+        <div style="font-size:.9rem;color:var(--text2)">Students with outstanding payments</div>
+      </div>
+      <div class="card" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Contact</th>
+                <th>Class</th>
+                <th>Total Due</th>
+                <th>Last Payment</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="pendingTable"><tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--text3)">No pending dues 🎉</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="section" id="section-notify">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:.5rem">Send Payment Reminder</div>
+          <p style="font-size:.85rem;color:var(--text3);margin-bottom:1rem">Send WhatsApp or SMS reminders to students with pending fees.</p>
+          <div class="form-group">
+            <label>Select Student</label>
+            <select id="notifyStudent">
+              <option value="">-- Choose a student --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message Channel</label>
+            <select id="notifyChannel">
+              <option value="whatsapp">WhatsApp</option>
+              <option value="sms">SMS</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message Preview</label>
+            <textarea id="notifyMsg" rows="5" placeholder="Select a student to generate a message..."></textarea>
+          </div>
+          <div id="notifyStudentInfo" style="display:none;background:var(--bg3);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:1rem;font-size:.85rem">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><span style="color:var(--text3)">Phone</span><span id="infoPhone">—</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Amount Due</span><span style="color:var(--red)" id="infoAmt">—</span></div>
+          </div>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="sendNotification()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.26 14a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.17 3h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              Send via WhatsApp / SMS
+            </button>
+            <button class="btn btn-ghost" onclick="sendBulkReminder()">Send to All Pending</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:.5rem">Notification Log</div>
+          <p style="font-size:.85rem;color:var(--text3);margin-bottom:1rem">Recent messages sent to students.</p>
+          <div id="notifyLog" style="display:flex;flex-direction:column;gap:.5rem">
+            <div class="empty" style="padding:2rem 1rem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:40px;height:40px;margin:0 auto .75rem;opacity:.3;display:block"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              No messages sent yet
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal-overlay" id="modalStudent">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalStudentTitle">Enrol New Student</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modalStudent')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editStudentId">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="sName" placeholder="Priya Sharma">
+        </div>
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" id="sAge" placeholder="18" min="3" max="80">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <input type="tel" id="sPhone" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label>WhatsApp Number</label>
+          <input type="tel" id="sWhatsApp" placeholder="+91 98765 43210">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="sEmail" placeholder="priya@email.com">
+        </div>
+        <div class="form-group">
+          <label>Guardian Name (if minor)</label>
+          <input type="text" id="sGuardian" placeholder="Parent / Guardian">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Course / Art Form *</label>
+          <select id="sCourse">
+            <option value="">Select course</option>
+            <optgroup label="Dance">
+              <option>Bharatanatyam</option>
+              <option>Kathak</option>
+              <option>Hip Hop</option>
+              <option>Contemporary</option>
+              <option>Salsa</option>
+              <option>Bollywood</option>
+              <option>Odissi</option>
+            </optgroup>
+            <optgroup label="Art">
+              <option>Painting</option>
+              <option>Sketching</option>
+              <option>Pottery</option>
+              <option>Calligraphy</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Batch / Timing *</label>
+          <select id="sTiming">
+            <option value="">Select timing</option>
+            <option>Morning 7:00 AM – 8:00 AM</option>
+            <option>Morning 8:00 AM – 9:00 AM</option>
+            <option>Morning 9:00 AM – 10:00 AM</option>
+            <option>Afternoon 12:00 PM – 1:00 PM</option>
+            <option>Evening 5:00 PM – 6:00 PM</option>
+            <option>Evening 6:00 PM – 7:00 PM</option>
+            <option>Evening 7:00 PM – 8:00 PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Admission Date</label>
+          <input type="date" id="sJoined">
+        </div>
+        <div class="form-group">
+          <label>Monthly Fee (₹) *</label>
+          <input type="number" id="sMonthlyFee" placeholder="1500" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Admission Fee (₹)</label>
+          <input type="number" id="sAdmissionFee" placeholder="500" min="0">
+        </div>
+        <div class="form-group">
+          <label>Admission Fee Paid?</label>
+          <select id="sAdmFeePaid">
+            <option value="no">No — Pending</option>
+            <option value="yes">Yes — Paid</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <textarea id="sAddress" placeholder="123, Main Road, Bengaluru" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="sNotes" placeholder="Any special notes about the student..." rows="2"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalStudent')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStudent()">Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pay Modal -->
+<div class="modal-overlay" id="modalPay">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h2>Record Payment</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modalPay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="payStudentId">
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:1rem">
+        <div style="font-weight:500" id="payStudentName">—</div>
+        <div style="font-size:.8rem;color:var(--text3);margin-top:.25rem" id="payStudentCourse">—</div>
+      </div>
+      <div class="form-group">
+        <label>Payment Type</label>
+        <select id="payType">
+          <option value="monthly">Monthly Fee</option>
+          <option value="admission">Admission Fee</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount (₹)</label>
+          <input type="number" id="payAmount" placeholder="1500">
+        </div>
+        <div class="form-group">
+          <label>Payment Date</label>
+          <input type="date" id="payDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Payment Mode</label>
+        <select id="payMode">
+          <option>UPI</option>
+          <option>Cash</option>
+          <option>Bank Transfer</option>
+          <option>Card</option>
+          <option>Cheque</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <input type="text" id="payNotes" placeholder="e.g. April month fee">
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.5rem">
+        <input type="checkbox" id="paySendMsg" style="width:auto;margin:0" checked>
+        <label style="margin:0;text-transform:none;letter-spacing:0;font-size:.875rem;color:var(--text2)">Send payment confirmation via WhatsApp / SMS</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalPay')">Cancel</button>
+      <button class="btn btn-primary" onclick="recordPayment()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Confirm Payment
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Student Detail Modal -->
+<div class="modal-overlay" id="modalDetail">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h2>Student Profile</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modalDetail')">✕</button>
+    </div>
+    <div class="modal-body" id="detailContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalDetail')">Close</button>
+      <button class="btn btn-primary" id="detailPayBtn">Record Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Welcome Modal -->
+<div class="modal-overlay" id="modalWelcome">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(139,92,246,0.1));border-bottom:1px solid var(--border2)">
+      <h2 style="color:var(--gold)">🎉 Welcome Message Ready!</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modalWelcome')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Student info pill -->
+      <div style="display:flex;align-items:center;gap:10px;background:var(--bg3);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:1.25rem">
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(201,168,76,0.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🌟</div>
+        <div>
+          <div style="font-weight:500;font-size:.95rem" id="welcomeStudentName">—</div>
+          <div style="font-size:.78rem;color:var(--text3);margin-top:2px">
+            <span id="welcomeCourseBadge" style="color:var(--purple-light)"></span>
+            &nbsp;·&nbsp;
+            <span id="welcomeTimingBadge" style="color:var(--text2)"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:1rem">
+        <div class="tab active" id="wtab-wa" onclick="switchWelcomeTab('wa',this)" style="font-size:.82rem">WhatsApp / SMS</div>
+        <div class="tab" id="wtab-email" onclick="switchWelcomeTab('email',this)" style="font-size:.82rem">Email</div>
+      </div>
+
+      <!-- WA preview -->
+      <div id="wpanel-wa">
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.04em">To: <span id="welcomePhone" style="color:var(--text2)"></span></div>
+        <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:.85rem;font-size:.82rem;line-height:1.7;color:var(--text2);white-space:pre-wrap;max-height:240px;overflow-y:auto" id="welcomeWaMsg"></div>
+        <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap">
+          <button class="btn btn-primary" id="welcomeSendWA">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Open WhatsApp
+          </button>
+          <button class="btn btn-ghost" id="welcomeSendSMS">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Send SMS
+          </button>
+        </div>
+      </div>
+
+      <!-- Email preview -->
+      <div id="wpanel-email" style="display:none">
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.04em">To: <span id="welcomeEmail" style="color:var(--text2)"></span></div>
+        <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:.85rem;font-size:.82rem;line-height:1.7;color:var(--text2);white-space:pre-wrap;max-height:240px;overflow-y:auto" id="welcomeEmailMsg"></div>
+        <div style="margin-top:1rem">
+          <button class="btn btn-primary" id="welcomeSendEmail">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Open Email Client
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;padding:.6rem .75rem;background:rgba(34,197,94,0.07);border-radius:var(--radius-sm);font-size:.78rem;color:var(--green);border:1px solid rgba(34,197,94,0.2)">
+        ✓ Welcome message logged in notification history. Click the buttons above to send.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalWelcome')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Data store ──────────────────────────────────────────────────────────────
+let students = JSON.parse(localStorage.getItem('rc_students') || '[]');
+let payments = JSON.parse(localStorage.getItem('rc_payments') || '[]');
+let notifications = JSON.parse(localStorage.getItem('rc_notifications') || '[]');
+
+function save(){
+  localStorage.setItem('rc_students',JSON.stringify(students));
+  localStorage.setItem('rc_payments',JSON.stringify(payments));
+  localStorage.setItem('rc_notifications',JSON.stringify(notifications));
+}
+
+// ── Utils ───────────────────────────────────────────────────────────────────
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const fmt=n=>Number(n).toLocaleString('en-IN');
+const today=()=>new Date().toISOString().split('T')[0];
+
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast toast-'+type+' show';
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+function showSection(id,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  const titles={dashboard:'Dashboard',students:'Students',fees:'Fees & Payments',classes:'Classes & Schedule',pending:'Pending Dues',notify:'Send Notifications'};
+  document.getElementById('pageTitle').textContent=titles[id]||id;
+  if(id==='dashboard')renderDashboard();
+  if(id==='students')renderStudentTable();
+  if(id==='fees')renderFeesTable('all');
+  if(id==='classes')renderClasses();
+  if(id==='pending')renderPending();
+  if(id==='notify')populateNotifyDropdown();
+}
+
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open')}
+
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+// ── Colors by course ─────────────────────────────────────────────────────────
+const courseColor={
+  'Bharatanatyam':'purple','Kathak':'purple','Hip Hop':'teal','Contemporary':'teal',
+  'Salsa':'amber','Bollywood':'amber','Odissi':'purple',
+  'Painting':'coral','Sketching':'coral','Pottery':'amber','Calligraphy':'amber'
+};
+function courseTag(c){
+  const col=courseColor[c]||'teal';
+  const colors={purple:'#8B5CF6',teal:'#2DD4BF',amber:'#F59E0B',coral:'#F97316'};
+  const bgs={purple:'rgba(139,92,246,0.12)',teal:'rgba(45,212,191,0.1)',amber:'rgba(245,158,11,0.1)',coral:'rgba(249,115,22,0.1)'};
+  return `<span class="badge" style="background:${bgs[col]||bgs.teal};color:${colors[col]||colors.teal}">${c}</span>`;
+}
+
+function initials(name){return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase()}
+const avatarColors=['#8B5CF6','#2DD4BF','#F59E0B','#F97316','#EC4899','#22C55E'];
+function avatarColor(name){return avatarColors[name.charCodeAt(0)%avatarColors.length]}
+
+// ── Student dues ──────────────────────────────────────────────────────────────
+function studentDue(s){
+  let due=0;
+  if(s.admissionFee&&s.admFeePaid==='no')due+=Number(s.admissionFee);
+  const paid=payments.filter(p=>p.studentId===s.id&&p.type==='monthly').reduce((a,b)=>a+Number(b.amount),0);
+  const monthsEnrolled=Math.max(1,Math.ceil((Date.now()-new Date(s.joined))/(1000*60*60*24*30)));
+  const totalMonthly=monthsEnrolled*Number(s.monthlyFee);
+  due+=Math.max(0,totalMonthly-paid);
+  return due;
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function renderDashboard(){
+  document.getElementById('stat-total').textContent=students.length;
+  const courses=new Set(students.map(s=>s.course));
+  document.getElementById('stat-classes').textContent=courses.size;
+  const thisMonth=new Date(); const m=thisMonth.getMonth(); const y=thisMonth.getFullYear();
+  const collected=payments.filter(p=>{const d=new Date(p.date);return d.getMonth()===m&&d.getFullYear()===y}).reduce((a,b)=>a+Number(b.amount),0);
+  document.getElementById('stat-collected').textContent='₹'+fmt(collected);
+  const totalDue=students.reduce((a,s)=>a+studentDue(s),0);
+  document.getElementById('stat-pending').textContent='₹'+fmt(totalDue);
+
+  const recent=document.getElementById('recentAdmissions');
+  if(!students.length){recent.innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>No students yet</div>';return;}
+  const sorted=[...students].sort((a,b)=>new Date(b.joined)-new Date(a.joined)).slice(0,5);
+  recent.innerHTML=sorted.map(s=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:.5rem 0;border-bottom:1px solid var(--border)">
+      <div class="avatar" style="background:${avatarColor(s.name)}22;color:${avatarColor(s.name)}">${initials(s.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
+        <div style="font-size:.75rem;color:var(--text3)">${s.course}</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--text3)">${s.joined}</div>
+    </div>`).join('');
+
+  const pov=document.getElementById('paymentOverview');
+  const dues=students.filter(s=>studentDue(s)>0).slice(0,4);
+  if(!dues.length){pov.innerHTML='<div class="badge badge-green" style="margin-bottom:.5rem">All payments up to date ✓</div>';return;}
+  pov.innerHTML=dues.map(s=>{
+    const d=studentDue(s);
+    return `<div class="pay-row"><div><div style="font-size:.875rem">${s.name}</div><div style="font-size:.75rem;color:var(--text3)">${s.course}</div></div><span class="badge badge-red">₹${fmt(d)} due</span></div>`;
+  }).join('');
+}
+
+// ── Students ──────────────────────────────────────────────────────────────────
+function renderStudentTable(list){
+  const data=list||students;
+  const tb=document.getElementById('studentTable');
+  if(!data.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--text3)">No students found.</td></tr>';return;}
+  tb.innerHTML=data.map(s=>{
+    const due=studentDue(s);
+    const status=due>0?`<span class="badge badge-red">₹${fmt(due)} due</span>`:`<span class="badge badge-green">Paid</span>`;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="avatar" style="background:${avatarColor(s.name)}22;color:${avatarColor(s.name)}">${initials(s.name)}</div>
+        <div><div style="font-weight:500">${s.name}</div><div style="font-size:.75rem;color:var(--text3)">${s.age?s.age+' yrs':''}</div></div>
+      </div></td>
+      <td><div style="font-size:.85rem">${s.phone}</div><div style="font-size:.75rem;color:var(--text3)">${s.email||''}</div></td>
+      <td>${courseTag(s.course)}</td>
+      <td style="font-size:.8rem;color:var(--text2)">${s.timing}</td>
+      <td style="font-size:.8rem;color:var(--text3)">${s.joined}</td>
+      <td>${status}</td>
+      <td>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="viewStudent('${s.id}')">View</button>
+          <button class="btn btn-primary btn-sm" onclick="openPayModal('${s.id}')">Pay</button>
+          <button class="btn btn-ghost btn-sm" onclick="editStudent('${s.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteStudent('${s.id}')">Del</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterStudents(){
+  const q=document.getElementById('studentSearch').value.toLowerCase();
+  const fc=document.getElementById('filterClass').value;
+  const filtered=students.filter(s=>{
+    const match=s.name.toLowerCase().includes(q)||s.phone.includes(q)||(s.email||'').toLowerCase().includes(q);
+    const classMatch=!fc||s.course===fc;
+    return match&&classMatch;
+  });
+  renderStudentTable(filtered);
+}
+
+// ── Add / Edit Student ────────────────────────────────────────────────────────
+function openAddStudentModal(){
+  document.getElementById('editStudentId').value='';
+  document.getElementById('modalStudentTitle').textContent='Enrol New Student';
+  ['sName','sAge','sPhone','sWhatsApp','sEmail','sGuardian','sNotes','sAddress'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sCourse').value='';
+  document.getElementById('sTiming').value='';
+  document.getElementById('sMonthlyFee').value='';
+  document.getElementById('sAdmissionFee').value='';
+  document.getElementById('sAdmFeePaid').value='no';
+  document.getElementById('sJoined').value=today();
+  document.getElementById('modalStudent').classList.add('open');
+}
+
+function editStudent(id){
+  const s=students.find(s=>s.id===id);if(!s)return;
+  document.getElementById('editStudentId').value=s.id;
+  document.getElementById('modalStudentTitle').textContent='Edit Student';
+  document.getElementById('sName').value=s.name;
+  document.getElementById('sAge').value=s.age||'';
+  document.getElementById('sPhone').value=s.phone;
+  document.getElementById('sWhatsApp').value=s.whatsapp||'';
+  document.getElementById('sEmail').value=s.email||'';
+  document.getElementById('sGuardian').value=s.guardian||'';
+  document.getElementById('sCourse').value=s.course;
+  document.getElementById('sTiming').value=s.timing;
+  document.getElementById('sJoined').value=s.joined;
+  document.getElementById('sMonthlyFee').value=s.monthlyFee;
+  document.getElementById('sAdmissionFee').value=s.admissionFee||'';
+  document.getElementById('sAdmFeePaid').value=s.admFeePaid||'no';
+  document.getElementById('sAddress').value=s.address||'';
+  document.getElementById('sNotes').value=s.notes||'';
+  document.getElementById('modalStudent').classList.add('open');
+}
+
+function saveStudent(){
+  const name=document.getElementById('sName').value.trim();
+  const phone=document.getElementById('sPhone').value.trim();
+  const course=document.getElementById('sCourse').value;
+  const timing=document.getElementById('sTiming').value;
+  const monthly=document.getElementById('sMonthlyFee').value;
+  if(!name||!phone||!course||!timing||!monthly){toast('Please fill all required fields','info');return;}
+  const eid=document.getElementById('editStudentId').value;
+  const data={
+    id:eid||uid(),name,phone,
+    whatsapp:document.getElementById('sWhatsApp').value.trim(),
+    email:document.getElementById('sEmail').value.trim(),
+    age:document.getElementById('sAge').value,
+    guardian:document.getElementById('sGuardian').value.trim(),
+    course,timing,
+    joined:document.getElementById('sJoined').value||today(),
+    monthlyFee:Number(monthly),
+    admissionFee:Number(document.getElementById('sAdmissionFee').value)||0,
+    admFeePaid:document.getElementById('sAdmFeePaid').value,
+    address:document.getElementById('sAddress').value.trim(),
+    notes:document.getElementById('sNotes').value.trim()
+  };
+  if(eid){const i=students.findIndex(s=>s.id===eid);students[i]=data;}
+  else{students.push(data);sendWelcome(data);}
+  save();
+  closeModal('modalStudent');
+  renderStudentTable();
+  renderDashboard();
+  toast(eid?'Student updated!':'Student enrolled! Welcome message sent ✓');
+}
+
+// ── Welcome Message ───────────────────────────────────────────────────────────
+function sendWelcome(s){
+  const waMsg=`🌟 Welcome to Happiness Creator! 🌟\n\nDear ${s.name},\n\nWe're absolutely thrilled to welcome you to the *Happiness Creator* family! 🎉\n\nHere are your enrolment details:\n📚 Course: ${s.course}\n⏰ Batch Timing: ${s.timing}\n📅 Start Date: ${s.joined}\n💰 Monthly Fee: ₹${fmt(s.monthlyFee)}\n\nGet ready to discover the joy of movement and creativity. We can't wait to see you shine! ✨\n\nSee you in class!\n— Happiness Creator Studio 🎭`;
+
+  const emailMsg=`Subject: Welcome to Happiness Creator! 🌟\n\nDear ${s.name},\n\nWe are delighted to welcome you to Happiness Creator!\n\nYour Enrolment Details:\n• Course: ${s.course}\n• Batch Timing: ${s.timing}\n• Start Date: ${s.joined}\n• Monthly Fee: ₹${fmt(s.monthlyFee)}\n\nWe believe every step, every stroke, and every creation brings happiness. You've just joined a community that celebrates art, dance, and the joy of expression.\n\nIf you have any questions, please feel free to reach out to us.\n\nWith love & joy,\nHappiness Creator Studio`;
+
+  // Log to notification history
+  const waPhone=(s.whatsapp||s.phone).replace(/[^0-9]/g,'');
+  notifications.unshift({id:uid(),studentId:s.id,studentName:s.name,type:'welcome-whatsapp',amount:0,channel:'WhatsApp',contact:s.whatsapp||s.phone,time:new Date().toLocaleString('en-IN')});
+  if(s.email) notifications.unshift({id:uid(),studentId:s.id,studentName:s.name,type:'welcome-email',amount:0,channel:'Email',contact:s.email,time:new Date().toLocaleString('en-IN')});
+  save();
+
+  // Show the welcome preview modal
+  document.getElementById('welcomeStudentName').textContent=s.name;
+  document.getElementById('welcomeCourseBadge').textContent=s.course;
+  document.getElementById('welcomeTimingBadge').textContent=s.timing;
+  document.getElementById('welcomeEmail').textContent=s.email||'(no email provided)';
+  document.getElementById('welcomePhone').textContent=s.whatsapp||s.phone;
+  document.getElementById('welcomeWaMsg').textContent=waMsg;
+  document.getElementById('welcomeEmailMsg').textContent=emailMsg;
+  document.getElementById('welcomeSendWA').onclick=()=>{
+    window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(waMsg)}`,'_blank');
+  };
+  document.getElementById('welcomeSendEmail').onclick=()=>{
+    window.open(`mailto:${s.email}?subject=${encodeURIComponent('Welcome to Happiness Creator! 🌟')}&body=${encodeURIComponent(emailMsg)}`,'_blank');
+  };
+  document.getElementById('welcomeSendSMS').onclick=()=>{
+    window.open(`sms:${s.phone}?body=${encodeURIComponent(waMsg)}`,'_blank');
+  };
+  document.getElementById('modalWelcome').classList.add('open');
+}
+
+function deleteStudent(id){
+  if(!confirm('Delete this student and all their payment records?'))return;
+  students=students.filter(s=>s.id!==id);
+  payments=payments.filter(p=>p.studentId!==id);
+  save();renderStudentTable();renderDashboard();
+  toast('Student removed');
+}
+
+// ── Student Detail ──────────────────────────────────────────────────────────
+function viewStudent(id){
+  const s=students.find(s=>s.id===id);if(!s)return;
+  const due=studentDue(s);
+  const pHistory=payments.filter(p=>p.studentId===id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('detailContent').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:1.25rem">
+      <div class="avatar" style="width:52px;height:52px;font-size:1.1rem;background:${avatarColor(s.name)}22;color:${avatarColor(s.name)}">${initials(s.name)}</div>
+      <div>
+        <div style="font-size:1.25rem;font-weight:500">${s.name}</div>
+        <div style="color:var(--text3);font-size:.85rem">${s.course} · ${s.timing}</div>
+      </div>
+      <div style="margin-left:auto">${due>0?`<span class="badge badge-red">₹${fmt(due)} due</span>`:`<span class="badge badge-green">All Paid</span>`}</div>
+    </div>
+    <div class="grid-2" style="margin-bottom:1rem;gap:.75rem">
+      ${detail('Phone',s.phone)}${detail('WhatsApp',s.whatsapp||s.phone)}
+      ${detail('Email',s.email||'—')}${detail('Age',s.age?s.age+' years':'—')}
+      ${detail('Joined',s.joined)}${detail('Monthly Fee','₹'+fmt(s.monthlyFee))}
+      ${detail('Admission Fee',s.admissionFee?'₹'+fmt(s.admissionFee)+' '+(s.admFeePaid==='yes'?'<span class="badge badge-green">Paid</span>':'<span class="badge badge-red">Pending</span>'):'—')}
+      ${detail('Address',s.address||'—')}
+    </div>
+    ${s.notes?`<div style="background:var(--bg3);border-radius:var(--radius-sm);padding:.6rem .75rem;font-size:.85rem;color:var(--text2);margin-bottom:1rem">📝 ${s.notes}</div>`:''}
+    <div style="font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:.5rem">Payment History</div>
+    ${pHistory.length?pHistory.map(p=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.875rem">
+        <div><div style="font-weight:500">₹${fmt(p.amount)}</div><div style="font-size:.75rem;color:var(--text3)">${p.type} · ${p.mode}</div></div>
+        <div style="text-align:right"><div style="color:var(--green)">Paid</div><div style="font-size:.75rem;color:var(--text3)">${p.date}</div></div>
+      </div>`).join('')
+    :'<div style="color:var(--text3);font-size:.85rem;padding:.5rem 0">No payments recorded yet.</div>'}
+  `;
+  document.getElementById('detailPayBtn').onclick=()=>{closeModal('modalDetail');openPayModal(id);};
+  document.getElementById('modalDetail').classList.add('open');
+}
+function detail(label,val){return `<div style="background:var(--bg3);border-radius:var(--radius-sm);padding:.6rem .75rem"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem">${label}</div><div style="font-size:.875rem">${val}</div></div>`;}
+
+// ── Payments ─────────────────────────────────────────────────────────────────
+function openPayModal(id){
+  const s=students.find(s=>s.id===id);if(!s)return;
+  document.getElementById('payStudentId').value=id;
+  document.getElementById('payStudentName').textContent=s.name;
+  document.getElementById('payStudentCourse').textContent=s.course+' · '+s.timing;
+  document.getElementById('payAmount').value=s.monthlyFee||'';
+  document.getElementById('payDate').value=today();
+  document.getElementById('payType').value='monthly';
+  document.getElementById('payNotes').value='';
+  document.getElementById('payMode').value='UPI';
+  document.getElementById('modalPay').classList.add('open');
+}
+
+function recordPayment(){
+  const sid=document.getElementById('payStudentId').value;
+  const amt=document.getElementById('payAmount').value;
+  const date=document.getElementById('payDate').value;
+  if(!amt||!date){toast('Please fill amount and date','info');return;}
+  const s=students.find(s=>s.id===sid);
+  const ptype=document.getElementById('payType').value;
+  if(ptype==='admission'&&s){s.admFeePaid='yes';save();}
+  const p={id:uid(),studentId:sid,amount:Number(amt),type:ptype,date,mode:document.getElementById('payMode').value,notes:document.getElementById('payNotes').value};
+  payments.push(p);save();
+  closeModal('modalPay');
+  renderDashboard();renderStudentTable();renderFeesTable(currentFeeTab);renderPending();
+  if(document.getElementById('paySendMsg').checked&&s){
+    const ch=document.getElementById('payMode').value;
+    simulateSend(s,'payment',amt,ch);
+  }
+  toast('Payment recorded! ✓');
+}
+
+// ── Fees Table ────────────────────────────────────────────────────────────────
+let currentFeeTab='all';
+function switchFeeTab(tab,el){
+  currentFeeTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderFeesTable(tab);
+}
+
+function renderFeesTable(tab){
+  const tb=document.getElementById('feesTable');
+  let rows=[];
+  students.forEach(s=>{
+    const due=studentDue(s);
+    if(s.admissionFee&&s.admFeePaid==='no'){
+      rows.push({s,type:'Admission Fee',amount:s.admissionFee,status:'pending',date:'—'});
+    }
+    const paid=payments.filter(p=>p.studentId===s.id&&p.type==='monthly');
+    paid.forEach(p=>rows.push({s,type:'Monthly Fee',amount:p.amount,status:'paid',date:p.date}));
+    if(due>0){
+      rows.push({s,type:'Monthly Fee',amount:due,status:'pending',date:'—'});
+    }
+  });
+  if(tab==='pending')rows=rows.filter(r=>r.status==='pending');
+  if(tab==='paid')rows=rows.filter(r=>r.status==='paid');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--text3)">No records found.</td></tr>';return;}
+  tb.innerHTML=rows.map(r=>`<tr>
+    <td><div style="display:flex;align-items:center;gap:8px">
+      <div class="avatar" style="background:${avatarColor(r.s.name)}22;color:${avatarColor(r.s.name)}">${initials(r.s.name)}</div>
+      <div><div style="font-weight:500">${r.s.name}</div><div style="font-size:.75rem;color:var(--text3)">${r.s.course}</div></div>
+    </div></td>
+    <td style="font-size:.85rem">${r.type}</td>
+    <td style="font-weight:500">₹${fmt(r.amount)}</td>
+    <td style="font-size:.85rem;color:var(--text3)">${r.date}</td>
+    <td>${r.status==='paid'?'<span class="badge badge-green">Paid</span>':'<span class="badge badge-red">Pending</span>'}</td>
+    <td>${r.status==='pending'?`<button class="btn btn-primary btn-sm" onclick="openPayModal('${r.s.id}')">Collect</button>`:'<span style="color:var(--text3);font-size:.8rem">—</span>'}</td>
+  </tr>`).join('');
+}
+
+// ── Classes ───────────────────────────────────────────────────────────────────
+function renderClasses(){
+  const classMap={};
+  students.forEach(s=>{
+    if(!classMap[s.course])classMap[s.course]={course:s.course,students:[],timings:new Set()};
+    classMap[s.course].students.push(s);
+    classMap[s.course].timings.add(s.timing);
+  });
+  const cc=document.getElementById('classCards');
+  if(!Object.keys(classMap).length){
+    cc.innerHTML='<div class="card" style="grid-column:1/-1;text-align:center;padding:3rem"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px;margin:0 auto .75rem;opacity:.3;display:block"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>No classes yet</div></div>';
+    return;
+  }
+  cc.innerHTML=Object.values(classMap).map(c=>{
+    const col=courseColor[c.course]||'teal';
+    const colors={purple:'#8B5CF6',teal:'#2DD4BF',amber:'#F59E0B',coral:'#F97316'};
+    const bgs={purple:'rgba(139,92,246,0.12)',teal:'rgba(45,212,191,0.1)',amber:'rgba(245,158,11,0.1)',coral:'rgba(249,115,22,0.1)'};
+    return `<div class="card">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem">
+        <div style="width:10px;height:10px;border-radius:50%;background:${colors[col]}"></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem">${c.course}</div>
+      </div>
+      <div style="font-size:1.75rem;font-family:'Cormorant Garamond',serif;color:var(--text)">${c.students.length}</div>
+      <div style="font-size:.75rem;color:var(--text3);margin-bottom:.75rem">students enrolled</div>
+      <div style="font-size:.8rem;color:var(--text2)">
+        ${[...c.timings].map(t=>`<div style="margin-bottom:.2rem">⏰ ${t}</div>`).join('')}
+      </div>
+      <div style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.25rem">
+        ${c.students.slice(0,4).map(s=>`<div class="avatar" style="width:28px;height:28px;font-size:.65rem;background:${avatarColor(s.name)}22;color:${avatarColor(s.name)}">${initials(s.name)}</div>`).join('')}
+        ${c.students.length>4?`<div style="font-size:.75rem;color:var(--text3);align-self:center;margin-left:.25rem">+${c.students.length-4} more</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Pending ───────────────────────────────────────────────────────────────────
+function renderPending(){
+  const tb=document.getElementById('pendingTable');
+  const pending=students.filter(s=>studentDue(s)>0);
+  if(!pending.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--text3)">No pending dues 🎉</td></tr>';return;}
+  const lastPay=id=>{const p=payments.filter(x=>x.studentId===id).sort((a,b)=>new Date(b.date)-new Date(a.date));return p.length?p[0].date:'Never';}
+  tb.innerHTML=pending.map(s=>`<tr>
+    <td><div style="display:flex;align-items:center;gap:8px">
+      <div class="avatar" style="background:${avatarColor(s.name)}22;color:${avatarColor(s.name)}">${initials(s.name)}</div>
+      <div style="font-weight:500">${s.name}</div>
+    </div></td>
+    <td style="font-size:.85rem">${s.phone}</td>
+    <td>${courseTag(s.course)}</td>
+    <td style="font-weight:500;color:var(--red)">₹${fmt(studentDue(s))}</td>
+    <td style="font-size:.85rem;color:var(--text3)">${lastPay(s.id)}</td>
+    <td>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="openPayModal('${s.id}')">Collect</button>
+        <button class="btn btn-ghost btn-sm" onclick="openNotifyFor('${s.id}')">Remind</button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+function populateNotifyDropdown(){
+  const sel=document.getElementById('notifyStudent');
+  const pending=students.filter(s=>studentDue(s)>0);
+  sel.innerHTML='<option value="">-- Choose a student --</option>'+pending.map(s=>`<option value="${s.id}">${s.name} (₹${fmt(studentDue(s))} due)</option>`).join('');
+}
+
+document.addEventListener('change',function(e){
+  if(e.target.id==='notifyStudent'){
+    const id=e.target.value;
+    if(!id){document.getElementById('notifyMsg').value='';document.getElementById('notifyStudentInfo').style.display='none';return;}
+    const s=students.find(s=>s.id===id);
+    const due=studentDue(s);
+    document.getElementById('infoPhone').textContent=s.whatsapp||s.phone;
+    document.getElementById('infoAmt').textContent='₹'+fmt(due);
+    document.getElementById('notifyStudentInfo').style.display='block';
+    const msg=generateMsg(s,due);
+    document.getElementById('notifyMsg').value=msg;
+  }
+});
+
+function generateMsg(s,due){
+  return `Dear ${s.name},\n\nThis is a friendly reminder from Rhythm & Canvas Studio.\n\nYou have a pending fee of ₹${fmt(due)} for your ${s.course} class.\n\nPlease make the payment at your earliest convenience.\n\nFor any queries, feel free to contact us.\n\nThank you,\nRhythm & Canvas Studio`;
+}
+
+function openNotifyFor(id){
+  showSection('notify',document.querySelector('.nav-item:nth-child(7)'));
+  setTimeout(()=>{
+    document.getElementById('notifyStudent').value=id;
+    document.getElementById('notifyStudent').dispatchEvent(new Event('change'));
+  },100);
+}
+
+function sendNotification(){
+  const id=document.getElementById('notifyStudent').value;
+  const channel=document.getElementById('notifyChannel').value;
+  if(!id){toast('Please select a student','info');return;}
+  const s=students.find(s=>s.id===id);
+  const due=studentDue(s);
+  simulateSend(s,'reminder',due,channel);
+}
+
+function sendBulkReminder(){
+  const pending=students.filter(s=>studentDue(s)>0);
+  if(!pending.length){toast('No pending dues!','info');return;}
+  pending.forEach(s=>simulateSend(s,'reminder',studentDue(s),'whatsapp'));
+  toast(`Reminders sent to ${pending.length} students ✓`);
+}
+
+function simulateSend(s,type,amount,channel){
+  const contact=s.whatsapp||s.phone;
+  const n={id:uid(),studentId:s.id,studentName:s.name,type,amount,channel,contact,time:new Date().toLocaleString('en-IN')};
+  notifications.unshift(n);save();
+  renderNotifyLog();
+
+  // Open WhatsApp if channel is whatsapp
+  if(channel==='whatsapp'||channel==='UPI'){
+    const msg=type==='payment'
+      ?`Dear ${s.name}, your payment of ₹${fmt(amount)} has been received. Thank you! — Rhythm & Canvas Studio`
+      :`Dear ${s.name}, you have a pending fee of ₹${fmt(amount)} for your ${s.course} class. Please pay at your earliest. — Rhythm & Canvas Studio`;
+    const phone=contact.replace(/[^0-9]/g,'');
+    const wa=`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(wa,'_blank');
+  } else {
+    toast(`${type==='payment'?'Payment confirmation':'Reminder'} sent to ${s.name} via ${channel} ✓`);
+  }
+}
+
+function renderNotifyLog(){
+  const log=document.getElementById('notifyLog');
+  if(!notifications.length){log.innerHTML='<div class="empty" style="padding:2rem 1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:40px;height:40px;margin:0 auto .75rem;opacity:.3;display:block"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>No messages sent yet</div>';return;}
+  log.innerHTML=notifications.slice(0,10).map(n=>{
+    const typeLabel=n.type==='welcome-whatsapp'?'Welcome · WhatsApp':n.type==='welcome-email'?'Welcome · Email':n.type==='payment'?'Payment confirmation':'Reminder';
+    const badgeClass=n.type.startsWith('welcome')?'badge-purple':'badge-green';
+    return `<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:.6rem;background:var(--bg3);border-radius:var(--radius-sm)">
+      <div>
+        <div style="font-size:.875rem;font-weight:500">${n.studentName}</div>
+        <div style="font-size:.75rem;color:var(--text3)">${typeLabel}${n.amount?` · ₹${fmt(n.amount)}`:''}</div>
+        <div style="font-size:.7rem;color:var(--text3);margin-top:.15rem">${n.time}</div>
+      </div>
+      <span class="badge ${badgeClass}" style="font-size:.7rem">Sent</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Welcome tab switch ────────────────────────────────────────────────────────
+function switchWelcomeTab(tab,el){
+  document.querySelectorAll('#modalWelcome .tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('wpanel-wa').style.display=tab==='wa'?'block':'none';
+  document.getElementById('wpanel-email').style.display=tab==='email'?'block':'none';
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.getElementById('sJoined').value=today();
+renderDashboard();
+renderNotifyLog();
+
+// Demo data if empty
+if(!students.length){
+  const demo=[
+    {id:uid(),name:'Priya Sharma',phone:'+91 98765 43210',whatsapp:'+91 98765 43210',email:'priya@email.com',age:'22',guardian:'',course:'Bharatanatyam',timing:'Evening 6:00 PM – 7:00 PM',joined:'2025-01-10',monthlyFee:1500,admissionFee:500,admFeePaid:'yes',address:'Koramangala, Bengaluru',notes:'Advanced level'},
+    {id:uid(),name:'Arjun Mehta',phone:'+91 99001 12233',whatsapp:'+91 99001 12233',email:'arjun@email.com',age:'18',guardian:'',course:'Hip Hop',timing:'Evening 5:00 PM – 6:00 PM',joined:'2025-02-15',monthlyFee:1200,admissionFee:500,admFeePaid:'yes',address:'Indiranagar, Bengaluru',notes:''},
+    {id:uid(),name:'Sneha Reddy',phone:'+91 87654 32109',whatsapp:'',email:'',age:'12',guardian:'Lakshmi Reddy',course:'Painting',timing:'Morning 9:00 AM – 10:00 AM',joined:'2025-03-01',monthlyFee:800,admissionFee:300,admFeePaid:'no',address:'HSR Layout, Bengaluru',notes:'Beginners batch'},
+    {id:uid(),name:'Rahul Nair',phone:'+91 76543 21098',whatsapp:'+91 76543 21098',email:'rahul@email.com',age:'26',guardian:'',course:'Kathak',timing:'Morning 8:00 AM – 9:00 AM',joined:'2025-01-20',monthlyFee:1500,admissionFee:500,admFeePaid:'yes',address:'Whitefield, Bengaluru',notes:''}
+  ];
+  students.push(...demo);
+  payments.push(
+    {id:uid(),studentId:demo[0].id,amount:1500,type:'monthly',date:'2025-05-01',mode:'UPI',notes:'May fee'},
+    {id:uid(),studentId:demo[1].id,amount:1200,type:'monthly',date:'2025-05-03',mode:'Cash',notes:'May fee'},
+    {id:uid(),studentId:demo[3].id,amount:1500,type:'monthly',date:'2025-04-10',mode:'UPI',notes:'April fee'}
+  );
+  save();renderDashboard();renderStudentTable();
+}
+</script>
+</body>
+</html>
